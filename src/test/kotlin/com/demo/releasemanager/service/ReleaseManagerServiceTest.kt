@@ -16,7 +16,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.never
 
 @ExtendWith(MockitoExtension::class)
 class ReleaseManagerServiceTest {
@@ -32,25 +31,22 @@ class ReleaseManagerServiceTest {
 
     @Test
     fun `should create a new system version when service version changes`() {
-        // Given
+
         val serviceName = "Service A"
         val serviceVersion = 2
         val existingSystemVersion = SystemVersion(1, 1)
         val deployServiceRequest = DeployServiceRequest(serviceName = serviceName, serviceVersion = serviceVersion)
 
-        // Stubbing the repository
+
         `when`(systemVersionRepository.findTopByOrderByVersionNumberDesc()).thenReturn(existingSystemVersion)
         `when`(serviceDeploymentRepository.findByServiceNameAndServiceVersion(serviceName, serviceVersion)).thenReturn(
             null
         )
         `when`(systemVersionRepository.save(any(SystemVersion::class.java))).thenAnswer { it.arguments[0] as SystemVersion }
 
-        // When
         val result = releaseManagerService.deployService(deployServiceRequest)
 
-        // Then
-        assertEquals(2, result) // Verify the returned system version number
-
+        assertEquals(2, result)
         verify(systemVersionRepository).save(argThat {
             it.versionNumber == 2
         })
@@ -75,10 +71,8 @@ class ReleaseManagerServiceTest {
             existingDeployment
         )
 
-        // When
         val result = releaseManagerService.deployService(deployServiceRequest)
 
-        // Then
         assertEquals(1, result)
     }
 
